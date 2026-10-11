@@ -1,0 +1,633 @@
+{% extends "base.html" %}
+
+{% block title %}Register — NEXORA{% endblock %}
+
+{% block content %}
+
+
+<div class="auth-page">
+
+
+    <!-- =================================
+         LEFT BRANDING SECTION
+    ================================== -->
+
+    <section class="brand-section">
+
+
+        <!-- Logo -->
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                💼
+            </div>
+
+            <div>
+
+                <div class="logo-name">
+                    NEXORA
+                </div>
+
+                <div class="logo-tagline">
+                    Your Career Starts Here
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Main Content -->
+
+        <div class="brand-content">
+
+
+            <div class="small-label">
+                START YOUR JOURNEY
+            </div>
+
+
+            <h1>
+
+                Build Your
+                <span>Career With Us</span>
+
+            </h1>
+
+
+            <p>
+
+                Create your NEXORA account and discover
+                opportunities that match your skills,
+                experience and career goals.
+
+            </p>
+
+
+            <!-- Benefits -->
+
+            <div class="benefits">
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Discover Opportunities
+                        </strong>
+
+                        <span>
+                            Find jobs that match your career goals
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Create Your Profile
+                        </strong>
+
+                        <span>
+                            Showcase your skills and experience
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Connect With Employers
+                        </strong>
+
+                        <span>
+                            Take the next step in your career
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================
+         REGISTER SECTION
+    ================================== -->
+
+    <section class="login-section">
+
+
+        <div class="login-card register-card">
+
+
+            <!-- Mobile Logo -->
+
+            <div class="mobile-logo">
+
+                💼 NEXORA
+
+            </div>
+
+
+            <!-- Heading -->
+
+            <div class="form-heading">
+
+                <h2>
+                    Create Your Account
+                </h2>
+
+                <p>
+                    Join NEXORA as a job seeker
+                </p>
+
+            </div>
+
+
+
+            <!-- REGISTER FORM -->
+
+            <form id="registerForm">
+
+
+                <!-- FIRST + LAST NAME -->
+
+                <div class="register-row">
+
+
+                    <div class="input-group">
+
+                        <label for="firstName">
+                            First Name
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">
+                                👤
+                            </span>
+
+                            <input
+                                type="text"
+                                id="firstName"
+                                placeholder="First name"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="lastName">
+                            Last Name
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">
+                                👤
+                            </span>
+
+                            <input
+                                type="text"
+                                id="lastName"
+                                placeholder="Last name"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- MOBILE NUMBER -->
+
+                <div class="input-group">
+
+                    <label for="mobile">
+                        Mobile Number
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            📱
+                        </span>
+
+                        <input
+                            type="tel"
+                            id="mobile"
+                            placeholder="+61 XXXX XXX XXX"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+
+                <div class="input-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            ✉
+                        </span>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Enter your email address"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PASSWORD + CONFIRM PASSWORD -->
+
+                <div class="register-row">
+
+
+                    <div class="input-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">
+                                🔒
+                            </span>
+
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Create password"
+                                required>
+                            
+                            <button type="button" class="show-password toggle-pwd" data-target="password">👁</button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="confirmPassword">
+                            Confirm Password
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">
+                                🔒
+                            </span>
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                placeholder="Confirm password"
+                                required>
+
+                            <button type="button" class="show-password toggle-pwd" data-target="confirmPassword">👁</button>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- TERMS -->
+
+                <label class="checkbox-row">
+
+
+                    <input
+                        type="checkbox"
+                        required>
+
+
+                    <span>
+
+                        I agree to the
+
+                        <a href="#">
+                            Terms & Conditions
+                        </a>
+
+                        and
+
+                        <a href="#">
+                            Privacy Policy
+                        </a>
+
+                    </span>
+
+
+                </label>
+
+
+
+                <!-- REGISTER BUTTON -->
+
+                <button
+                    type="submit"
+                    class="login-button">
+
+                    Create Account
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- OR -->
+
+            <div class="divider">
+
+                <span></span>
+
+                <p>OR</p>
+
+                <span></span>
+
+            </div>
+
+
+
+            <!-- GOOGLE -->
+
+
+            <button
+                type="button"
+                id="google-register"
+                class="google-button">
+                
+                <span class="google-logo">G</span>
+                <span>Continue with Google</span>
+
+            </button>
+
+
+
+            <!-- LOGIN -->
+
+            <div class="register-text">
+
+                Already have an account?
+
+                <a href="{{url_for('auth.login')}}">
+
+                    Login
+
+                </a>
+
+            </div>
+
+
+
+            <!-- EMPLOYER -->
+
+            <div class="employer-link">
+
+                Want to hire talent?
+
+                <a href="{{ url_for('auth.emregister') }}">
+
+                    Employer Registration
+
+                </a>
+
+            </div>
+
+
+
+            <!-- HOME -->
+
+            <a
+                href="#"
+                class="back-home">
+
+                ← Back to Home
+
+            </a>
+
+
+        </div>
+
+
+    </section>
+
+
+</div>
+<script>
+
+    const googleRegister = document.getElementById("google-register");
+
+    if(googleRegister) {
+        googleRegister.addEventListener("click", async () => {
+            console.log("GOggle Registration clicked");
+
+            const { data, error } = 
+            await supabaseClient.auth.signInWithOAuth({
+                provider: "google",
+                options: {
+                    redirectTo: "http://127.0.0.1:5000/auth/callback"
+                }
+            });
+
+            if (error) {
+                console.error("Google login error:", error);
+                showToast(error.message, "error");
+            }
+        });
+    }
+
+    const registerForm = document.getElementById("registerForm");
+
+    if(registerForm) {
+        registerForm.addEventListener(
+            "submit",
+            async function (event) {
+                event.preventDefault();
+
+                const firstName = document.getElementById("firstName").value.trim();
+
+                const lastName = document.getElementById("lastName").value.trim();
+
+                const mobile = document.getElementById("mobile").value.trim();
+
+                const email = document.getElementById("email").value.trim();
+
+                const password = document.getElementById("password").value.trim();
+
+                const confirmPassword = document.getElementById("confirmPassword").value;
+
+                const registerButton = registerForm.querySelector(
+                    'button[type="submit"]'
+                );
+
+                if (password !== confirmPassword) {
+                    showToast("Passwords do not match.", "error");
+                    return;
+                }
+
+                if (password.length < 6 ) {
+                    showToast("Password must be at least 6 characters.", "error");
+                    return;
+                }
+
+                registerButton.disabled = true;
+
+                registerButton.textContent = "Creating Account...";
+
+                try {
+                    const { data, error } = await supabaseClient.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: {
+                            data: {
+                                first_name: firstName,
+                                last_name: lastName,
+                                mobile: mobile,
+                                role: "job_seeker",
+                                password_set: true
+                            },
+                            emailRedirectTo: "http://127.0.0.1:5000/auth/login"
+                        }
+                    });
+
+                let registeredData = data;
+
+                if (error || (data?.user?.identities && data.user.identities.length === 0)) {
+                    // User already exists! Try to sign them in and update their role instead
+                    const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (signInError) {
+                        console.error("Job seeker registration/login error:", signInError);
+                        showToast(error ? error.message : "Account exists, but password was incorrect. Please use your existing password to register.", "error");
+                        registerButton.disabled = false;
+                        registerButton.textContent = "Create Account";
+                        return;
+                    }
+
+                    // Sign in successful, now upgrade their metadata
+                    const currentMeta = signInData.user?.user_metadata || {};
+                    let newRole = "job_seeker";
+                    if (currentMeta.role === "employer") newRole = "both";
+
+                    const { data: updateData, error: updateError } = await supabaseClient.auth.updateUser({
+                        data: {
+                            first_name: firstName,
+                            last_name: lastName,
+                            mobile: mobile,
+                            role: newRole
+                        }
+                    });
+
+                    if (updateError) {
+                        showToast("Failed to update your existing account: " + updateError.message, "error");
+                        registerButton.disabled = false;
+                        registerButton.textContent = "Create Account";
+                        return;
+                    }
+
+                    registeredData = updateData;
+                }
+
+                console.log("Registration Successful:", data);
+
+                showToast("Account created! Please check your email to confirm it before logging in.", "success");
+
+                // give it a tiny wait so the user can actually see the success message before getting redirected
+                setTimeout(() => {
+                    window.location.href = "/auth/login";
+                }, 2500);
+                } catch (error) {
+                    console.error("Unexpected error while registration.", error);
+
+                    showToast("Something went wrong. Please try again.", "error");
+
+                    registerButton.disabled = false;
+                    registerButton.textContent = "Create Account";
+                }
+            }
+        );
+    }
+    
+    // making the eye icons work to show or hide the passwords
+    document.querySelectorAll('.toggle-pwd').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const pwdInput = document.getElementById(targetId);
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                this.textContent = '🔒';
+            } else {
+                pwdInput.type = 'password';
+                this.textContent = '👁';
+            }
+        });
+    });
+
+</script>
+
+
+{% endblock %}

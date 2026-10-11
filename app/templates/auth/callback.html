@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Authenticating...{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; padding: 20px;">
+    <div style="text-align: center;">
+        <h2 id="loading-title" style="font-size: 24px; font-weight: 700; margin-bottom: 16px; color: var(--navy);">Logging you in...</h2>
+        <p id="loading-desc" style="color: #6b7280; font-size: 16px;">Please wait while we complete the authentication.</p>
+    </div>
+</div>
+
+<div id="nx-urls" hidden
+     data-login="{{ url_for('auth.login') }}"
+     data-emlogin="{{ url_for('auth.emlogin') }}"
+     data-reset="{{ url_for('auth.reset_password') }}"
+     data-setpw="{{ url_for('auth.set_password') }}"
+     data-seeker="{{ url_for('auth.seekerdashboard') }}"
+     data-emregister="{{ url_for('auth.emregister') }}"
+     data-employer="{{ url_for('auth.employerdashboard') }}"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const U = document.getElementById('nx-urls').dataset;
+
+    // Read these once, immediately: supabase-js removes the URL hash after it
+    // has processed it, so checking later would miss a recovery link.
+    const rawParams = new URLSearchParams(window.location.search || window.location.hash.substring(1));
+    const errorDesc = rawParams.get('error_description');
+    const isRecovery = window.location.href.includes('type=recovery');
+
+    // "employer" when the person started from the employer login page
+    let intent = null;
+    try { intent = localStorage.getItem('nx_login_intent'); } catch (e) {}
+    const clearIntent = () => { try { localStorage.removeItem('nx_login_intent'); } catch (e) {} };
+
+    let handled = false;
+    function go(url) {
+        if (handled) return;
+        handled = true;
+        window.location.replace(url);
+    }
+
+    async function routeSession(session) {
+        const meta = session.user.user_metadata || {};
+        const isEmployer = meta.role === 'employer';
+
+        // Started on the EMPLOYER login (e.g. Google) but the account is not an employer
+        if (intent === 'employer' && !isEmployer) {
+            handled = true;
+            clearIntent();
+            await supabaseClient.auth.signOut();
+            window.location.replace(
+                U.emregister + '?error_description=' +
+                encodeURIComponent('For the first time logging in, we need a few details from you, so please fill them out manually to register. From next time you can directly login through Google.')
+            );
+            return;
+        }
+
+        clearIntent();
+
+        if (isEmployer) return go(U.employer);
+        if (!meta.password_set) return go(U.setpw);
+        return go(U.seeker);
+    }
+
+    if (errorDesc) {
+        document.getElementById('loading-title').textContent = "Link Expired or Invalid";
+        document.getElementById('loading-title').style.color = "var(--rose)";
+        document.getElementById('loading-desc').textContent = "Redirecting to login page...";
+
+        // Clean the URL so the global toast in base.html does not also fire
+        window.history.replaceState({}, '', window.location.pathname);
+
+        const target = intent === 'employer' ? U.emlogin : U.login;
+        clearIntent();
+        setTimeout(() => window.location.replace(target), 3000);
+    } else {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'PASSWORD_RECOVERY' || isRecovery) {
+                return go(U.reset);
+            }
+            if (event === 'SIGNED_IN' && session) {
+                routeSession(session);
+            }
+        });
+
+        // Safety net in case the auth event is slow or already happened
+        setTimeout(async () => {
+            if (handled) return;
+            if (isRecovery) return go(U.reset);
+
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                routeSession(session);
+            } else {
+                const target = intent === 'employer' ? U.emlogin : U.login;
+                clearIntent();
+                go(target);
+            }
+        }, 2500);
+    }
+</script>
+{% endblock %}

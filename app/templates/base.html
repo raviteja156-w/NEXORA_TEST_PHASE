@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}NEXORA - Place to Find a Job{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body class="bg-navy text-cream">
+
+    <!-- =========================
+         NEXORA NAVBAR
+    ========================== -->
+    <header class="nexora-navbar">
+        <nav class="nexora-nav-shell">
+
+            <!-- Logo -->
+            <a href="{{ url_for('main.index') }}" class="nexora-brand" aria-label="NEXORA home">
+                <span class="nexora-brand-mark" aria-hidden="true">
+                    <span class="nexora-brand-orbit"></span>
+                    <span class="nexora-brand-dot nexora-brand-dot-purple"></span>
+                    <span class="nexora-brand-dot nexora-brand-dot-mint"></span>
+                </span>
+                <span class="nexora-brand-name">NEXORA</span>
+            </a>
+
+            <!-- Main navigation -->
+            <div class="nexora-main-links" aria-label="Main navigation">
+                <a href="{{ url_for('main.jobs') }}" class="nexora-nav-link">Find Jobs</a>
+                <a href="{{ url_for('main.jobs') }}" class="nexora-nav-link">Companies</a>
+                <a href="{{ url_for('auth.seekerplans') }}" id="navPricingLink" class="nexora-nav-link">Pricing</a>
+                <script>
+                    try {
+                        if (localStorage.getItem('nx_current_role') === 'employer') {
+                            const _pl = document.getElementById('navPricingLink');
+                            if (_pl) _pl.href = "{{ url_for('auth.employerplans') }}";
+                        }
+                    } catch(_) {}
+                </script>
+            </div>
+
+            <!-- Authentication / Employer navigation -->
+            <div class="nexora-actions" style="visibility: hidden;">
+
+                <!-- User Login -->
+                <a href="{{ url_for('auth.login') }}" class="nexora-login-link">
+                    Login
+                </a>
+
+                <!-- User Register -->
+                <a href="{{ url_for('auth.signup') }}" class="nexora-register-btn">
+                    Register
+                </a>
+
+                <!-- Employers dropdown -->
+                <div class="nexora-employer-menu" id="employerMenu">
+
+                    <button
+                        type="button"
+                        class="nexora-employer-btn"
+                        id="employerMenuButton"
+                        aria-expanded="false"
+                        aria-controls="employerDropdown">
+                        <span>For Employers</span>
+                        <i data-lucide="chevron-down" class="nexora-chevron" aria-hidden="true"></i>
+                    </button>
+
+                    <div
+                        class="nexora-employer-dropdown"
+                        id="employerDropdown"
+                        role="menu"
+                        aria-hidden="true">
+
+                        <!-- Empty for now; content can be added later -->
+                        <a href="{{ url_for('auth.employerplans') }}" class="nexora-dropdown-item" role="menuitem">
+                            <span>Employer Plans</span>
+                        </a>
+
+                        <a href="{{ url_for('auth.emlogin') }}"
+                           class="nexora-dropdown-item"
+                           role="menuitem">
+                            <span>Employer Login</span>
+                        </a>
+
+                        <a href="{{ url_for('auth.emregister') }}"
+                           class="nexora-dropdown-item"
+                           role="menuitem">
+                            <span>Employer Register</span>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile actions -->
+            <div class="nexora-mobile-actions" style="visibility: hidden;">
+                <a href="{{ url_for('auth.login') }}" class="nexora-login-link">Login</a>
+                <a href="{{ url_for('auth.signup') }}" class="nexora-register-btn">Register</a>
+
+                <div class="nexora-employer-menu" id="employerMenuMobile">
+                    <button
+                        type="button"
+                        class="nexora-employer-btn"
+                        id="employerMenuMobileButton"
+                        aria-expanded="false"
+                        aria-controls="employerDropdownMobile">
+                        <span>Employers</span>
+                        <i data-lucide="chevron-down" class="nexora-chevron" aria-hidden="true"></i>
+                    </button>
+
+                    <div
+                        class="nexora-employer-dropdown nexora-mobile-dropdown"
+                        id="employerDropdownMobile"
+                        role="menu"
+                        aria-hidden="true">
+
+                        <a href="{{ url_for('auth.employerplans')}}" class="nexora-dropdown-item" role="menuitem">Employer Plans</a>
+                        <a href="{{ url_for('auth.emlogin') }}" class="nexora-dropdown-item" role="menuitem">Employer Login</a>
+                        <a href="{{ url_for('auth.emregister') }}" class="nexora-dropdown-item" role="menuitem">Employer Register</a>
+
+                    </div>
+                </div>
+            </div>
+
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+
+        const supabaseClient = window.supabase.createClient(
+            "{{ config['SUPABASE_URL'] }}",
+            "{{ config['SUPABASE_ANON_KEY'] }}"
+        );
+        window.supabaseClient = supabaseClient;
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+
+            function setupEmployerMenu(menuId, buttonId, dropdownId) {
+                const menu = document.getElementById(menuId);
+                const button = document.getElementById(buttonId);
+                const dropdown = document.getElementById(dropdownId);
+
+                if (!menu || !button || !dropdown) return;
+
+                function setOpen(open) {
+                    menu.classList.toggle("is-open", open);
+                    button.setAttribute("aria-expanded", String(open));
+                    dropdown.setAttribute("aria-hidden", String(!open));
+                }
+
+                button.addEventListener("click", function (event) {
+                    event.stopPropagation();
+
+                    const isOpen = menu.classList.contains("is-open");
+                    setOpen(!isOpen);
+                });
+
+                
+
+                dropdown.querySelectorAll("a").forEach(function (link) {
+                    link.addEventListener("click", function () {
+                        setOpen(false);
+                    });
+                });
+
+                document.addEventListener("click", function (event) {
+                    if (!menu.contains(event.target) &&
+                    !button.contains(event.target)) {
+                        setOpen(false);
+                    }
+                });
+
+                document.addEventListener("keydown", function (event) {
+                    if (event.key === "Escape") {
+                        setOpen(false);
+                    }
+                });
+            }
+
+            setupEmployerMenu(
+                "employerMenu",
+                "employerMenuButton",
+                "employerDropdown"
+            );
+
+            setupEmployerMenu(
+                "employerMenuMobile",
+                "employerMenuMobileButton",
+                "employerDropdownMobile"
+            );
+
+            // figuring out if the person is logged in so we can change the top bar buttons
+            supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                const desktopActions = document.querySelector('.nexora-actions');
+                const mobileActions = document.querySelector('.nexora-mobile-actions');
+                
+                if (session) {
+                    const user = session.user;
+                    const role = user.user_metadata?.role;
+                    const hasEmployerId = !!user.user_metadata?.employer_id;
+                    const currentPortalRole = localStorage.getItem('nx_current_role');
+
+                    const isEmployer = (currentPortalRole === 'employer') || 
+                                       (role === 'employer') || 
+                                       (role === 'both' && currentPortalRole !== 'job_seeker') ||
+                                       (hasEmployerId && currentPortalRole !== 'job_seeker');
+
+                    let dashUrl = isEmployer ? "{{ url_for('auth.employerdashboard') }}" : "{{ url_for('auth.seekerdashboard') }}";
+                    const pricingLink = document.getElementById('navPricingLink');
+                    if (pricingLink) {
+                        pricingLink.href = isEmployer ? "{{ url_for('auth.employerplans') }}" : "{{ url_for('auth.seekerplans') }}";
+                    }
+
+                    const empId = (user.user_metadata?.employer_id || localStorage.getItem('nx_employer_id') || "").toUpperCase();
+
+                    // updating the big screen buttons
+                    if (desktopActions) {
+                        desktopActions.innerHTML = `
+                            ${(isEmployer && empId) ? `
+                            <span class="nexora-employer-id-pill" style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:rgba(108,92,245,0.12); border:1px solid rgba(108,92,245,0.35); border-radius:10px; color:#A59BFF; font-family:monospace; font-size:12.5px; font-weight:700;" title="Verified Employer ID">
+                                <i data-lucide="shield-check" style="width:14px;height:14px; color:#6C5CF5;"></i>
+                                <span>ID: ${empId}</span>
+                            </span>
+                            ` : ''}
+                            <a href="${dashUrl}" class="nexora-login-link">Dashboard</a>
+                            <a href="#" id="desktop-logout" class="nexora-register-btn" style="background:var(--rose)">Logout</a>
+                        `;
+                        if (window.lucide) window.lucide.createIcons({ root: desktopActions });
+                        document.getElementById('desktop-logout').addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            e.target.textContent = "Logging out...";
+                            e.target.style.opacity = "0.7";
+                            e.target.style.pointerEvents = "none";
+                            try {
+                                await supabaseClient.auth.signOut();
+                            } catch(err) {
+                                console.error(err);
+                            }
+                            try {
+                                Object.keys(localStorage).forEach(k => {
+                                    if (k.startsWith('sb-') || k.includes('supabase') || k.startsWith('nx_')) localStorage.removeItem(k);
+                                });
+                                sessionStorage.clear();
+                            } catch(_) {}
+                            window.location.replace("{{ url_for('main.index') }}");
+                        });
+                    }
+
+                    // updating the phone screen buttons
+                    if (mobileActions) {
+                        mobileActions.innerHTML = `
+                            ${(isEmployer && empId) ? `
+                            <span class="nexora-employer-id-pill" style="display:inline-flex; align-items:center; gap:5px; padding:5px 10px; background:rgba(108,92,245,0.12); border:1px solid rgba(108,92,245,0.35); border-radius:10px; color:#A59BFF; font-family:monospace; font-size:12px; font-weight:700;">
+                                <i data-lucide="shield-check" style="width:13px;height:13px; color:#6C5CF5;"></i>
+                                <span>ID: ${empId}</span>
+                            </span>
+                            ` : ''}
+                            <a href="${dashUrl}" class="nexora-login-link">Dashboard</a>
+                            <a href="#" id="mobile-logout" class="nexora-register-btn" style="background:var(--rose)">Logout</a>
+                        `;
+                        if (window.lucide) window.lucide.createIcons({ root: mobileActions });
+                        document.getElementById('mobile-logout').addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            e.target.textContent = "Logging out...";
+                            e.target.style.opacity = "0.7";
+                            e.target.style.pointerEvents = "none";
+                            try {
+                                await supabaseClient.auth.signOut();
+                            } catch(err) {
+                                console.error(err);
+                            }
+                            try {
+                                Object.keys(localStorage).forEach(k => {
+                                    if (k.startsWith('sb-') || k.includes('supabase')) localStorage.removeItem(k);
+                                });
+                                sessionStorage.clear();
+                            } catch(_) {}
+                            window.location.replace("{{ url_for('main.index') }}");
+                        });
+                    }
+                }
+                
+                // unhide the buttons only after we know what state they are in so it doesnt look glitchy
+                if (desktopActions) desktopActions.style.visibility = 'visible';
+                if (mobileActions) mobileActions.style.visibility = 'visible';
+            });
+        });
+    </script>
+
+    <!-- the popup toast thingy -->
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
+    <script>
+        window.showToast = function(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            
+            if (typeof message === 'string' && (message === 'Failed to fetch' || message.includes('Failed to fetch'))) {
+                message = 'Database unreachable (Failed to fetch). Your Supabase project is paused or offline. Please unpause it in your Supabase dashboard.';
+            }
+            
+            const toast = document.createElement('div');
+            let borderColor = 'var(--mint)';
+            let iconBg = 'rgba(43, 224, 190, 0.1)';
+            let iconColor = 'var(--mint)';
+            let iconName = 'check-circle-2';
+
+            if (type === 'error') {
+                borderColor = 'var(--rose)';
+                iconBg = 'rgba(255, 99, 112, 0.1)';
+                iconColor = 'var(--rose)';
+                iconName = 'alert-circle';
+            } else if (type === 'info' || type === 'preview') {
+                borderColor = 'var(--indigo)';
+                iconBg = 'rgba(108, 92, 245, 0.12)';
+                iconColor = 'var(--indigo)';
+                iconName = 'sparkles';
+            } else if (type === 'warning') {
+                borderColor = '#F59E0B';
+                iconBg = 'rgba(245, 158, 11, 0.12)';
+                iconColor = '#F59E0B';
+                iconName = 'alert-triangle';
+            }
+            
+            toast.style.cssText = `
+                transform: translateY(20px);
+                opacity: 0;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                pointer-events: auto;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 14px 16px;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+                border: 1px solid #EFEBE2;
+                max-width: 380px;
+                border-left: 4px solid ${borderColor};
+            `;
+            
+            toast.innerHTML = `
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: ${iconBg}; color: ${iconColor}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i data-lucide="${iconName}" style="width: 18px; height: 18px;"></i>
+                </div>
+                <p style="font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 500; color: var(--navy); line-height: 1.4; margin: 0; flex: 1;">${message}</p>
+                <button onclick="this.parentElement.style.opacity='0'; setTimeout(()=>this.parentElement.remove(), 300)" style="background:none; border:none; color: #8B8F9E; cursor: pointer; padding: 4px; display:flex; align-items:center;">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            if (window.lucide) window.lucide.createIcons({ root: toast });
+            
+            // slide the popup into view
+            requestAnimationFrame(() => {
+                toast.style.transform = 'translateY(0)';
+                toast.style.opacity = '1';
+            });
+            
+            // hide it automatically after 5 secs
+            setTimeout(() => {
+                if(toast.parentElement) {
+                    toast.style.transform = 'translateY(20px)';
+                    toast.style.opacity = '0';
+                    setTimeout(() => { if(toast.parentElement) toast.remove(); }, 300);
+                }
+            }, 5000);
+        };
+        
+        // Globally check for Supabase errors in the URL and display them
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search || window.location.hash.substring(1));
+            const errorDesc = urlParams.get('error_description');
+            if (errorDesc) {
+                // Show the error toast
+                window.showToast(errorDesc.replace(/\+/g, ' '), 'error');
+                
+                // Clean up the URL so the error doesn't show again if they refresh
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+            }
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

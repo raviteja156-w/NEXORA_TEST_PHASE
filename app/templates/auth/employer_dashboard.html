@@ -1,0 +1,581 @@
+{% extends "base.html" %}
+
+{% block title %}Employer Dashboard — NEXORA{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-5 md:px-8 py-8 md:py-10">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+
+        <div class="flex items-center gap-3">
+
+            <span
+                id="employerInitials"
+                class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-display font-bold"
+                data-employer-color="{{ employer.color }}"
+            >{{ employer.initials }}</span>
+
+            <div>
+
+                <h1
+                    id="employerCompany"
+                    class="font-display text-2xl md:text-3xl font-bold text-cream tracking-tight"
+                >{{ employer.company }}</h1>
+
+                <p class="text-sm text-cream/50">
+                    Employer dashboard
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('main.post_job') }}"
+            class="btn btn-accent"
+        >
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Post a Job
+        </a>
+
+    </div>
+
+
+    <!-- Metrics -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+
+        <!-- Active Jobs -->
+        <div class="card p-5">
+
+            <span class="icon-badge icon-badge-indigo w-9 h-9 mb-3">
+                <i data-lucide="briefcase" class="w-4 h-4"></i>
+            </span>
+
+            <p class="text-xs font-semibold text-ink/40 mb-1">
+                Active Jobs
+            </p>
+
+            <p
+                class="font-display text-2xl font-bold text-navy"
+                data-counter="{{ my_jobs|length }}"
+            >0</p>
+
+        </div>
+
+
+        <!-- Applications -->
+        <div class="card p-5">
+
+            <span class="icon-badge icon-badge-mint w-9 h-9 mb-3">
+                <i data-lucide="send" class="w-4 h-4"></i>
+            </span>
+
+            <p class="text-xs font-semibold text-ink/40 mb-1">
+                Applications
+            </p>
+
+            <p
+                class="font-display text-2xl font-bold text-navy"
+                data-counter="{{ total_apps }}"
+            >0</p>
+
+        </div>
+
+
+        <!-- Views -->
+        <div class="card p-5">
+
+            <span class="icon-badge icon-badge-amber w-9 h-9 mb-3">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+            </span>
+
+            <p class="text-xs font-semibold text-ink/40 mb-1">
+                Views
+            </p>
+
+            <p
+                class="font-display text-2xl font-bold text-navy"
+                data-counter="{{ total_views }}"
+            >0</p>
+
+        </div>
+
+
+        <!-- Shortlisted -->
+        <div class="card p-5">
+
+            <span class="icon-badge icon-badge-rose w-9 h-9 mb-3">
+                <i data-lucide="star" class="w-4 h-4"></i>
+            </span>
+
+            <p class="text-xs font-semibold text-ink/40 mb-1">
+                Shortlisted
+            </p>
+
+            <p
+                class="font-display text-2xl font-bold text-navy"
+                data-counter="{{ shortlisted }}"
+            >0</p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Main Content -->
+    <div class="grid lg:grid-cols-[1fr_320px] gap-8">
+
+        <!-- Jobs -->
+        <div id="jobs">
+
+            <div class="card p-0 overflow-hidden mb-8">
+
+                <div class="p-6 border-b border-grey-line flex items-center justify-between">
+
+                    <h2 class="font-display font-semibold text-lg text-navy">
+                        Job performance
+                    </h2>
+
+                </div>
+
+
+                {% if my_jobs %}
+
+                <!-- Desktop Table -->
+                <table class="nx-table w-full nx-table-desktop">
+
+                    <thead>
+
+                        <tr>
+                            <th>Job title</th>
+                            <th>Status</th>
+                            <th>Views</th>
+                            <th>Applications</th>
+                            <th>Posted</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for job in my_jobs %}
+
+                        <tr>
+
+                            <td>
+
+                                <a
+                                    href="{{ url_for('main.jobs') }}"
+                                    class="font-medium text-navy hover:text-indigo"
+                                >{{ job.title }}</a>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if job.status == 'Approved' %}
+
+                                <span class="chip chip-mint">
+                                    Live
+                                </span>
+
+                                {% elif job.status == 'Pending' %}
+
+                                <span class="chip">
+                                    Pending review
+                                </span>
+
+                                {% elif job.status == 'Draft' %}
+
+                                <span class="chip">
+                                    Draft
+                                </span>
+
+                                {% else %}
+
+                                <span class="chip chip-rose">
+                                    {{ job.status }}
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                {{ job.views }}
+                            </td>
+
+
+                            <td>
+                                {{ job.applications_count }}
+                            </td>
+
+
+                            <td class="text-ink/50">
+                                {{ job.posted_days_ago }}d ago
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+
+                <!-- Mobile Jobs -->
+                <div class="nx-table-mobile p-4 flex flex-col gap-3">
+
+                    {% for job in my_jobs %}
+
+                    <div class="border border-grey-line rounded-xl p-4">
+
+                        <div class="flex items-center justify-between mb-2">
+
+                            <a
+                                href="{{ url_for('main.jobs') }}"
+                                class="font-medium text-navy text-sm"
+                            >{{ job.title }}</a>
+
+
+                            {% if job.status == 'Approved' %}
+
+                            <span class="chip chip-mint">
+                                Live
+                            </span>
+
+                            {% elif job.status == 'Pending' %}
+
+                            <span class="chip">
+                                Pending
+                            </span>
+
+                            {% elif job.status == 'Draft' %}
+
+                            <span class="chip">
+                                Draft
+                            </span>
+
+                            {% else %}
+
+                            <span class="chip chip-rose">
+                                {{ job.status }}
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="flex gap-4 text-xs text-ink/50">
+
+                            <span>
+                                {{ job.views }} views
+                            </span>
+
+                            <span>
+                                {{ job.applications_count }} applications
+                            </span>
+
+                            <span>
+                                {{ job.posted_days_ago }}d ago
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                {% else %}
+
+                <!-- No Jobs -->
+                <div class="text-center py-14">
+
+                    <i
+                        data-lucide="briefcase"
+                        class="w-8 h-8 text-grey mx-auto mb-3"
+                    ></i>
+
+                    <p class="font-display font-semibold text-navy">
+                        Ready to find your next hire?
+                    </p>
+
+                    <a
+                        href="{{ url_for('main.post_job') }}"
+                        class="btn btn-outline btn-sm mt-4 inline-flex"
+                    >
+                        Post a job
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <!-- Right Sidebar -->
+        <div class="space-y-6">
+
+            <!-- Recent Applicants -->
+            <div class="card p-6">
+
+                <div class="flex items-center justify-between mb-4">
+
+                    <h3 class="font-display font-semibold text-navy text-sm">
+                        Recent applicants
+                    </h3>
+
+                    <a
+                        href="{{ url_for('main.applicants') }}"
+                        class="text-xs font-semibold text-indigo hover:text-indigo-dark"
+                    >
+                        View all
+                    </a>
+
+                </div>
+
+
+                <div class="flex flex-col gap-3">
+
+                    {% for c in recent_applicants %}
+
+                    <div class="flex items-center gap-3">
+
+                        <span
+                            class="w-9 h-9 rounded-full bg-cream-dim text-navy flex items-center justify-center text-xs font-bold shrink-0"
+                        >{{ c.avatar_initials }}</span>
+
+
+                        <div class="min-w-0 flex-1">
+
+                            <p class="text-sm font-medium text-navy truncate">
+                                {{ c.name }}
+                            </p>
+
+                            <p class="text-xs text-ink/50 truncate">
+                                {{ c.job_title }}
+                            </p>
+
+                        </div>
+
+
+                        <span class="chip shrink-0">
+                            {{ c.stage }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <!-- Boost Card -->
+            <div
+                class="rounded-2xl p-6 text-cream border border-white/10 relative overflow-hidden"
+                style="background: linear-gradient(135deg, var(--indigo-dark) 0%, var(--navy-elevated) 70%);"
+            >
+
+                <span
+                    class="icon-badge icon-badge-mint icon-float w-10 h-10 absolute top-4 right-4"
+                    style="background: rgba(43, 224, 190, 0.2);"
+                >
+                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+                </span>
+
+
+                <h3 class="font-display font-semibold mb-2">
+                    Boost your reach
+                </h3>
+
+
+                <p class="text-sm text-cream/60 mb-4 max-w-[85%]">
+                    Featured jobs get up to 3x more views from candidates.
+                </p>
+
+
+                <a
+                    href="{{ url_for('auth.employerplans') }}"
+                    class="btn bg-cream text-navy hover:bg-white btn-sm"
+                >
+                    View packages
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<div
+    id="nx-urls"
+    hidden
+    data-emlogin="{{ url_for('auth.emlogin') }}"
+    data-seeker="{{ url_for('auth.seekerdashboard') }}"
+></div>
+
+
+<script>
+(function () {
+
+    var urlsElement =
+        document.getElementById("nx-urls");
+
+    if (!urlsElement) {
+        return;
+    }
+
+    var urls =
+        urlsElement.dataset;
+
+
+    async function checkEmployerSession() {
+
+        try {
+
+            var result =
+                await supabaseClient.auth.getSession();
+
+            var session =
+                result.data.session;
+
+
+            if (!session) {
+
+                window.location.replace(
+                    urls.emlogin
+                );
+
+                return;
+            }
+
+
+            var meta =
+                session.user.user_metadata || {};
+
+
+            var isEmployerUser = (meta.role === "employer" || meta.role === "both" || !!meta.employer_id || localStorage.getItem("nx_current_role") === "employer");
+
+            if (!isEmployerUser) {
+                window.location.replace(urls.seeker);
+                return;
+            }
+            try { localStorage.setItem("nx_current_role", "employer"); } catch(_) {}
+
+
+            var initialsElement =
+                document.getElementById(
+                    "employerInitials"
+                );
+
+
+            /*
+             * Apply the employer color here.
+             * This avoids putting Jinja directly
+             * inside a CSS style value.
+             */
+            if (initialsElement) {
+
+                var employerColor =
+                    initialsElement.getAttribute(
+                        "data-employer-color"
+                    );
+
+                if (employerColor) {
+
+                    initialsElement.style.background =
+                        employerColor;
+
+                }
+
+            }
+
+
+            if (meta.company_name) {
+                var nameElement =
+                    document.getElementById(
+                        "employerCompany"
+                    );
+
+
+                if (nameElement) {
+
+                    nameElement.textContent =
+                        meta.company_name;
+
+                }
+
+
+                if (initialsElement) {
+
+                    var words =
+                        meta.company_name
+                            .trim()
+                            .split(/\s+/);
+
+
+                    var initials =
+                        words
+                            .slice(0, 2)
+                            .map(function (word) {
+
+                                return word.charAt(0);
+
+                            })
+                            .join("")
+                            .toUpperCase();
+
+
+                    initialsElement.textContent =
+                        initials;
+
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Employer session check failed:",
+                error
+            );
+
+
+            window.location.replace(
+                urls.emlogin
+            );
+
+        }
+
+    }
+
+
+    checkEmployerSession();
+
+})();
+</script>
+
+{% endblock %}

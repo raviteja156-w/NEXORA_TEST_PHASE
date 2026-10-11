@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Login — NEXORA{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center p-6">
+
+    <div class="w-full max-w-md">
+
+        <h1 class="text-3xl font-bold mb-2">
+            NEXORA
+        </h1>
+
+        <p class="text-gray-600 mb-6">
+            Login to your account
+        </p>
+
+        <form id="loginForm" class="space-y-4">
+
+            <!-- Email -->
+            <input
+                id="email"
+                type="email"
+                placeholder="Email"
+                required
+                class="border rounded p-3 w-full"
+            >
+
+            <!-- Password -->
+            <input
+                id="password"
+                type="password"
+                placeholder="Password"
+                required
+                class="border rounded p-3 w-full"
+            >
+
+            <button
+                id="loginButton"
+                type="submit"
+                class="bg-black text-white rounded p-3 w-full"
+            >
+                Login
+            </button>
+
+        </form>
+
+        <div
+            id="message"
+            class="mt-4"
+        ></div>
+
+        <p class="mt-4 text-center">
+            Don't have an account?
+            <a
+                href="/auth/signup"
+                class="underline"
+            >
+                Create Account
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const loginForm =
+    document.getElementById("loginForm");
+
+const loginButton =
+    document.getElementById("loginButton");
+
+const message =
+    document.getElementById("message");
+
+
+loginForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+        const email =
+            document.getElementById("email")
+                .value
+                .trim();
+
+        const password =
+            document.getElementById("password")
+                .value;
+
+
+        loginButton.disabled = true;
+
+        loginButton.innerHTML =
+            "Logging in...";
+
+        message.innerHTML = "";
+
+
+        try {
+
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+
+                    email: email,
+
+                    password: password
+
+                });
+
+
+            if (error) {
+
+                console.error(
+                    "Login error:",
+                    error
+                );
+
+                message.innerHTML =
+                    error.message;
+
+                loginButton.disabled = false;
+
+                loginButton.innerHTML =
+                    "Login";
+
+                return;
+            }
+
+
+            console.log(
+                "Login successful:",
+                data
+            );
+
+
+            window.location.href =
+                "/auth/success";
+
+
+        } catch (error) {
+
+            console.error(
+                "Unexpected login error:",
+                error
+            );
+
+            message.innerHTML =
+                "Something went wrong.";
+
+            loginButton.disabled = false;
+
+            loginButton.innerHTML =
+                "Login";
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

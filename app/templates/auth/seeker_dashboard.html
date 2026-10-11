@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard — NEXORA{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/seeker_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="app-shell" id="appShell" 
+     data-home-url="{{ url_for('main.index') }}" 
+     data-jobs-url="{{ url_for('main.jobs') }}" 
+     data-plans-url="{{ url_for('auth.seekerplans') }}">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <a href="{{ url_for('main.index') }}" class="brand">
+      <div class="brand-mark">▰</div>
+      <span>NEXORA</span>
+    </a>
+
+    <nav class="side-nav">
+      <a class="side-link active" href="{{ url_for('auth.seekerdashboard') }}">
+        <span class="side-icon">⌂</span><span>Dashboard</span>
+      </a>
+      <a class="side-link" href="{{ url_for('main.jobs') }}">
+        <span class="side-icon">⌕</span><span>Find Jobs</span>
+      </a>
+      <a class="side-link" href="#applications">
+        <span class="side-icon">▤</span><span>My Applications</span>
+      </a>
+      <a class="side-link" href="#">
+        <span class="side-icon">♙</span><span>My Profile</span>
+      </a>
+      <a class="side-link" href="#">
+        <span class="side-icon">▧</span><span>Resume Builder</span>
+      </a>
+      <a class="side-link" href="#">
+        <span class="side-icon">□</span><span>Interviews</span>
+      </a>
+      <a class="side-link" href="#">
+        <span class="side-icon">▱</span><span>Messages</span>
+      </a>
+      <a class="side-link" href="#saved">
+        <span class="side-icon">♡</span><span>Saved Jobs</span>
+      </a>
+      <a class="side-link" href="#">
+        <span class="side-icon">✧</span><span>AI Recommendations</span>
+      </a>
+      <a class="side-link" href="{{ url_for('auth.seekerplans') }}">
+        <span class="side-icon">♕</span><span>Pricing Plans</span>
+      </a>
+      <a class="side-link" href="#">
+        <span class="side-icon">▭</span><span>Career Resources</span>
+      </a>
+      <a class="side-link" href="#">
+        <span class="side-icon">⚙</span><span>Settings</span>
+      </a>
+      <a class="side-link" href="#" id="sidebarLogoutBtn" style="color: #ff5e7e; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+        <span class="side-icon" style="color: #ff5e7e;">⎋</span><span>Sign Out</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Area -->
+  <main class="main-area">
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation menu">☰</button>
+
+      <div class="top-search">
+        <span>⌕</span>
+        <input type="text" placeholder="Search jobs, skills, or companies..." />
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn notification" aria-label="Notifications" title="2 New notifications">
+          ♧<span class="notification-count">2</span>
+        </button>
+        <button class="icon-btn" aria-label="Messages" title="Messages">▱</button>
+
+        <div class="profile-container">
+          <button class="profile-btn" id="profileBtn" aria-label="User Profile">
+            <span class="avatar" id="avatarInitials">JS</span>
+            <span class="profile-name" id="profileName">{{ seeker.name }}</span>
+            <span class="chevron">⌄</span>
+          </button>
+
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="profile-dropdown-header">
+              <p id="dropdownUserName">{{ seeker.name }}</p>
+              <small id="profileEmail">jobseeker@nexora.com</small>
+            </div>
+            <a href="{{ url_for('main.jobs') }}" class="profile-dropdown-item">
+              <span>⌕</span> Browse Jobs
+            </a>
+            <a href="{{ url_for('auth.seekerplans') }}" class="profile-dropdown-item">
+              <span>♕</span> Subscription Plans
+            </a>
+            <a href="{{ url_for('auth.emlogin') }}" class="profile-dropdown-item">
+              <span>💼</span> Switch to Employer Portal
+            </a>
+            <button id="logoutBtn" class="profile-dropdown-item logout">
+              <span>⎋</span> Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-content">
+
+      <!-- Free Plan Banner -->
+      <section class="plan-banner">
+        <div class="plan-icon">🔒</div>
+        <div class="plan-copy">
+          <h2>You are on <span>Free Plan</span></h2>
+          <p>Upgrade to see your full job matches, match percentage, and<br class="desktop-break" />
+            AI recommendations based on your resume.</p>
+        </div>
+        <a href="{{ url_for('auth.seekerplans') }}" class="pink-btn">View Plans <span>→</span></a>
+        <button class="banner-close" aria-label="Close banner">×</button>
+      </section>
+
+      <div class="dashboard-grid">
+
+        <!-- Center Column -->
+        <div class="center-column">
+
+          <!-- Job Match Progress -->
+          <section class="panel match-panel">
+            <div class="panel-heading">
+              <div class="heading-icon blue">◎</div>
+              <div>
+                <h3>Job Match Progress</h3>
+                <p>Based on your resume, skills and preferences</p>
+              </div>
+              <span class="small-plan">Free Plan<br /><b>Showing limited results</b></span>
+            </div>
+
+            <div class="locked-match">
+              <div class="company-logo orange">N</div>
+              <div class="job-blur">
+                <strong>Frontend Developer</strong>
+                <span>Northlane Digital</span>
+                <span>Hyderabad • Full Time</span>
+              </div>
+              <div class="lock-area">
+                <div class="lock-circle">🔒</div>
+                <span>Match Locked</span>
+              </div>
+              <button class="blue-btn">Upgrade to View</button>
+            </div>
+
+            <div class="locked-match">
+              <div class="company-logo purple">A</div>
+              <div class="job-blur">
+                <strong>Software Engineer</strong>
+                <span>TechCore</span>
+                <span>Hyderabad • Full Time</span>
+              </div>
+              <div class="lock-area">
+                <div class="lock-circle">🔒</div>
+                <span>Match Locked</span>
+              </div>
+              <button class="blue-btn">Upgrade to View</button>
+            </div>
+          </section>
+
+          <!-- Recommended Jobs -->
+          <section class="panel recommended-panel">
+            <div class="panel-heading">
+              <div class="heading-icon purple">☆</div>
+              <div>
+                <h3>Recommended Jobs for You</h3>
+                <p>Based on your profile, skills and preferences • Free to view</p>
+              </div>
+              <span class="small-plan blue-pill">Showing {{ (posted_jobs|length) + 4 if posted_jobs else 4 }} jobs</span>
+            </div>
+
+            <div class="jobs-grid">
+              {% if posted_jobs %}
+                {% for pj in posted_jobs %}
+                <article class="job-card">
+                  <div class="company-logo generic">{{ pj.title[:1]|upper }}</div>
+                  <div class="job-info">
+                    <h4>{{ pj.title }}</h4>
+                    <p>Verified Employer</p>
+                    <small>⌖ {{ pj.location or 'Remote' }} • ◷ {{ pj.type or 'Full Time' }}</small>
+                    <div class="tags">
+                      {% if pj.requirements %}
+                        {% for req in pj.requirements.split(',')[:3] %}
+                        <span>{{ req.strip() }}</span>
+                        {% endfor %}
+                      {% else %}
+                        <span>Urgent</span><span>Active</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="job-action">
+                    <span class="match">95% Match</span>
+                    <button class="view-job">View Job</button>
+                  </div>
+                </article>
+                {% endfor %}
+              {% endif %}
+
+              <article class="job-card">
+                <div class="company-logo microsoft">▦</div>
+                <div class="job-info">
+                  <h4>Software Engineer</h4>
+                  <p>Microsoft</p>
+                  <small>⌖ Hyderabad • ◷ Full Time</small>
+                  <div class="tags"><span>Python</span><span>Flask</span><span>SQL</span></div>
+                </div>
+                <div class="job-action">
+                  <span class="match">92% Match</span>
+                  <button class="view-job">View Job</button>
+                </div>
+              </article>
+
+              <article class="job-card">
+                <div class="company-logo amazon">a</div>
+                <div class="job-info">
+                  <h4>Python Developer</h4>
+                  <p>Amazon</p>
+                  <small>⌖ Hyderabad • ◷ Full Time</small>
+                  <div class="tags"><span>Python</span><span>Django</span><span>AWS</span></div>
+                </div>
+                <div class="job-action">
+                  <span class="match">88% Match</span>
+                  <button class="view-job">View Job</button>
+                </div>
+              </article>
+
+              <article class="job-card">
+                <div class="company-logo tcs">tcs</div>
+                <div class="job-info">
+                  <h4>Associate Software Engineer</h4>
+                  <p>TCS</p>
+                  <small>⌖ Hyderabad • ◷ Full Time</small>
+                  <div class="tags"><span>Python</span><span>SQL</span><span>OOP</span></div>
+                </div>
+                <div class="job-action">
+                  <span class="match">82% Match</span>
+                  <button class="view-job">View Job</button>
+                </div>
+              </article>
+
+              <article class="job-card">
+                <div class="company-logo infosys">Infosys</div>
+                <div class="job-info">
+                  <h4>System Engineer</h4>
+                  <p>Infosys</p>
+                  <small>⌖ Hyderabad • ◷ Full Time</small>
+                  <div class="tags"><span>Python</span><span>Java</span><span>Problem Solving</span></div>
+                </div>
+                <div class="job-action">
+                  <span class="match">80% Match</span>
+                  <button class="view-job">View Job</button>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- Upgrade CTA -->
+          <section class="upgrade-strip">
+            <div class="upgrade-lock">🔒</div>
+            <div>
+              <h3>View more matching jobs</h3>
+              <p>Get full job list, match percentage, and AI recommendations<br />by upgrading to a paid plan.</p>
+            </div>
+            <a href="{{ url_for('auth.seekerplans') }}" class="pink-btn">Upgrade Now <span>→</span></a>
+          </section>
+
+          <!-- Paid Benefits -->
+          <section class="benefits">
+            <h3>• What You Get in Paid Plans</h3>
+            <div class="benefit-grid">
+              <div class="benefit-card green">
+                <div class="benefit-icon">◎</div>
+                <div><h4>Unlimited Job Matches</h4><p>Get more relevant jobs based on your profile.</p></div>
+              </div>
+              <div class="benefit-card purple">
+                <div class="benefit-icon">▥</div>
+                <div><h4>Match Percentage</h4><p>See exact match score for each job.</p></div>
+              </div>
+              <div class="benefit-card gold">
+                <div class="benefit-icon">✦</div>
+                <div><h4>AI Recommendations</h4><p>Personalized jobs and career suggestions.</p></div>
+              </div>
+              <div class="benefit-card blue">
+                <div class="benefit-icon">▧</div>
+                <div><h4>Resume Analysis</h4><p>Get AI feedback to improve your resume.</p></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Column -->
+        <aside class="right-column">
+
+          <section class="panel summary-panel">
+            <div class="summary-title">
+              <div class="heading-icon blue">▥</div>
+              <h3>Your Job Match Summary</h3>
+            </div>
+
+            <div class="summary-list">
+              <div><span>Total Matches</span><strong>56 <b>🔒</b></strong></div>
+              <div><span>High Match Jobs</span><strong>18 <b>🔒</b></strong></div>
+              <div><span>Medium Match Jobs</span><strong>24 <b>🔒</b></strong></div>
+              <div><span>Low Match Jobs</span><strong>14 <b>🔒</b></strong></div>
+            </div>
+
+            <div class="increase-box">
+              <h4>💡 Increase your matches!</h4>
+              <p>Upgrade to Pro or Premium to unlock personalized job matches, higher accuracy and AI-powered recommendations.</p>
+              <a href="{{ url_for('auth.seekerplans') }}" class="outline-green">View Plans <span>→</span></a>
+            </div>
+          </section>
+
+          <section class="panel recently-panel">
+            <div class="recent-heading">
+              <div class="heading-icon purple">◷</div>
+              <h3>Recently Viewed</h3>
+              <a href="{{ url_for('main.jobs') }}">View All</a>
+            </div>
+
+            <div class="recent-item">
+              <div class="mini-logo orange">N</div>
+              <div><strong>Frontend Developer</strong><span>Northlane Digital</span></div>
+              <b>🔒</b>
+            </div>
+            <div class="recent-item">
+              <div class="mini-logo blue-bg">S</div>
+              <div><strong>Software Engineer</strong><span>TechCore</span></div>
+              <b>🔒</b>
+            </div>
+            <div class="recent-item">
+              <div class="mini-logo purple-bg">P</div>
+              <div><strong>Python Developer</strong><span>Amazon</span></div>
+              <b>🔒</b>
+            </div>
+          </section>
+        </aside>
+
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/seeker_dashboard.js') }}"></script>
+{% endblock %}

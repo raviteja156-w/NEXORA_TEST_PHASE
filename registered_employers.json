@@ -1,0 +1,44 @@
+{
+    "EMP-CXFFOK6M": {
+        "employer_id": "EMP-CXFFOK6M",
+        "email": "fictionalfreak39@gmail.com",
+        "company_name": "SOLONERDENTERPRISE",
+        "company_website": "solonerd.com",
+        "contact_person": "fictional",
+        "contact_phone": "07569744869",
+        "contact_email": "fictionalfreak39@gmail.com",
+        "contact_job_title": "HR",
+        "industry": "IT",
+        "company_size": "1-10",
+        "company_location": "Hyderabad",
+        "company_description": ""
+    },
+    "EMP-AEPGYB1I": {
+        "employer_id": "EMP-AEPGYB1I",
+        "email": "solonerd4@gmail.com",
+        "company_name": "SOLOSOLO",
+        "company_website": "solonerd.com",
+        "contact_person": "Solo Nerd",
+        "contact_phone": "07569744869",
+        "contact_email": "solonerd4@gmail.com",
+        "contact_job_title": "HR",
+        "industry": "IT",
+        "company_size": "1-10",
+        "company_location": "Hyderabad",
+        "company_description": ""
+    },
+    "EMP-2T4D26NG": {
+        "employer_id": "EMP-2T4D26NG",
+        "email": "vinaydattaraog@gmail.com",
+        "company_name": "woodland",
+        "company_website": "woodland.com",
+        "contact_person": "vijay kumar",
+        "contact_phone": "7896548752",
+        "contact_email": "vinaydattaraog@gmail.com",
+        "contact_job_title": "hr",
+        "industry": "IT",
+        "company_size": "1-10",
+        "company_location": "Hyderabad",
+        "company_description": ""
+    }
+}

@@ -1,0 +1,495 @@
+{% extends "base.html" %}
+
+{% block title %}Employer Login33333333333333333333333333333333333333333333333333333333333333 — NEXORA{% endblock %}
+
+{% block content %}
+
+<div class="auth-page">
+
+
+    <!-- ==============================
+         LEFT BRANDING
+    =============================== -->
+
+    <section class="brand-section employer-brand">
+
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                💼
+            </div>
+
+            <div>
+
+                <div class="logo-name">
+                    NEXORA
+                </div>
+
+                <div class="logo-tagline">
+                    Your Career Starts Here
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="brand-content">
+
+            <div class="small-label">
+                FOR EMPLOYERS
+            </div>
+
+
+            <h1>
+
+                Find Your
+                <span>Next Great Hire</span>
+
+            </h1>
+
+
+            <p>
+
+                Connect with skilled professionals,
+                post opportunities and build your
+                dream team with NEXORA.
+
+            </p>
+
+
+            <div class="benefits">
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Reach Top Talent
+                        </strong>
+
+                        <span>
+                            Connect with skilled job seekers
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Post Job Opportunities
+                        </strong>
+
+                        <span>
+                            Find candidates for your open roles
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Manage Applications
+                        </strong>
+
+                        <span>
+                            Review and manage applicants easily
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==============================
+         LOGIN
+    =============================== -->
+
+    <section class="login-section">
+
+
+        <div class="login-card">
+
+
+            <div class="mobile-logo">
+                💼 NEXORA
+            </div>
+
+
+            <div class="form-heading">
+
+                <div class="form-badge">
+                    EMPLOYER
+                </div>
+
+                <h2>
+                    Welcome Back
+                </h2>
+
+                <p>
+                    Login to manage your company and jobs
+                </p>
+
+            </div>
+
+
+
+            <form id="employerLoginForm">
+
+
+
+
+                <!-- EMAIL -->
+
+                <div class="input-group">
+
+                    <label for="email">
+                        Work Email
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            ✉
+                        </span>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Enter your work email"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-group">
+
+                    <div class="password-label">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <a href="#" id="forgotPasswordBtn">
+                            Forgot Password?
+                        </a>
+
+                    </div>
+
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            required>
+
+                        <button
+                            type="button"
+                            class="show-password">
+
+                            👁
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- LOGIN -->
+
+                <button
+                    type="submit"
+                    class="login-button">
+
+                    Login to Employer Account
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- DIVIDER -->
+
+            <div class="divider">
+
+                <span></span>
+
+                <p>OR</p>
+
+                <span></span>
+
+            </div>
+
+
+
+            <!-- GOOGLE -->
+
+            <button
+                type="button"
+                id="google-login"
+                class="google-button">
+
+                <span class="google-logo">
+                    G
+                </span>
+
+                <span>
+                    Continue with Google
+                </span>
+
+            </button>
+
+
+
+            <!-- REGISTER -->
+
+            <div class="register-text">
+
+                Don't have an employer account?
+
+                <a href="{{url_for('auth.emregister')}}">
+                    Register
+                </a>
+
+            </div>
+
+
+
+            <!-- JOB SEEKER -->
+
+            <div class="employer-link">
+
+                Looking for a job?
+
+                <a href="{{url_for('auth.login')}}">
+                    Job Seeker Login
+                </a>
+
+            </div>
+
+
+
+            <a
+                href="{{ url_for('main.index') }}"
+                class="back-home">
+
+                ← Back to Home
+
+            </a>
+
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+            const role = session.user?.user_metadata?.role;
+            if (role === "employer" || role === "both" || session.user?.user_metadata?.employer_id) {
+                try { localStorage.setItem("nx_current_role", "employer"); } catch(_) {}
+                window.location.replace("{{ url_for('auth.employerdashboard') }}");
+            }
+        }
+    });
+
+    const employerLoginForm = document.getElementById("employerLoginForm");
+
+    employerLoginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        const loginButton = employerLoginForm.querySelector(
+            'button[type="submit"]'
+        );
+
+        loginButton.disabled = true;
+        loginButton.textContent = "Logging in...";
+
+        try {
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+            if (error) {
+                console.error("Employer login error:", error);
+
+                showToast(error.message === "Email not confirmed" ? "Please confirm your email first - check your inbox for the verification link." : error.message, "error");
+
+                loginButton.disabled = false;
+                loginButton.textContent = "Login to Employer Account";
+
+                return;
+            }
+
+            // The credentials were valid, but that alone doesn't mean this
+            // is an employer account — job seekers use the same
+            // auth.users table. Check the role stored on the account
+            // before letting them into the employer dashboard.
+            const role = data.user?.user_metadata?.role;
+
+            if (role !== "employer" && role !== "both") {
+                console.warn("Non-employer account tried employer login:", role);
+
+                await supabaseClient.auth.signOut();
+
+                window.location.replace("{{ url_for('auth.emregister') }}?error_description=" + encodeURIComponent("You are registered as a Job Seeker. Please fill out these details to register as an Employer too."));
+
+                return;
+            }
+
+            const savedId = (data.user?.user_metadata?.employer_id || "").toUpperCase();
+            if (savedId) {
+                try { localStorage.setItem("nx_employer_id", savedId); } catch(_) {}
+            }
+
+            console.log("Employer login successful:", data);
+
+            try { localStorage.setItem("nx_current_role", "employer"); } catch(_) {}
+
+            // This is the redirect page: on success, send the employer
+            // to their dashboard.
+            window.location.href = "{{ url_for('auth.employerdashboard') }}";
+
+        } catch (error) {
+            console.error("Unexpected employer login error:", error);
+
+            showToast(error?.message || "Something went wrong. Please try again.", "error");
+
+            loginButton.disabled = false;
+            loginButton.textContent = "Login to Employer Account";
+        }
+    });
+
+
+    // Continue with Google (employer login only). The "employer" intent is
+    // remembered so /auth/callback can check this Google account really
+    // belongs to an employer before letting it into the employer dashboard.
+    document.getElementById("google-login").addEventListener("click", async () => {
+        try { localStorage.setItem("nx_login_intent", "employer"); } catch (err) {}
+
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: window.location.origin + "/auth/callback"
+            }
+        });
+
+        if (error) {
+            console.error("Google login error:", error);
+            showToast(error.message, "error");
+        }
+    });
+
+    // Forgot password: sends the Supabase reset email. The link lands on
+    // /auth/callback, which sends employers on to the reset page.
+    document.getElementById("forgotPasswordBtn").addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const emailValue = document.getElementById("email").value.trim();
+
+        if (!emailValue) {
+            showToast("Please enter your work email first!", "error");
+            document.getElementById("email").focus();
+            return;
+        }
+
+        try { localStorage.setItem("nx_login_intent", "employer"); } catch (err) {}
+
+        try {
+            const response = await fetch("/auth/api/forgot_password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: emailValue })
+            });
+            const resData = await response.json();
+
+            if (!response.ok) {
+                showToast(resData.error || "Could not send reset email.", "error");
+            } else {
+                showToast(resData.message || "Password reset email sent! Please check your inbox.", "success");
+            }
+        } catch (err) {
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(emailValue, {
+                redirectTo: window.location.origin + "/auth/callback"
+            });
+
+            if (error) {
+                showToast(error.message, "error");
+            } else {
+                showToast("Password reset email sent! Please check your inbox.", "success");
+            }
+        }
+    });
+
+    // eye icon to show / hide the password
+    document.querySelector(".show-password").addEventListener("click", function () {
+        const input = document.getElementById("password");
+        if (input.type === "password") {
+            input.type = "text";
+            this.textContent = "🔒";
+        } else {
+            input.type = "password";
+            this.textContent = "👁";
+        }
+    });
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Find Jobs — NEXORA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-5 md:px-8 py-8 md:py-12">
+
+  <!-- Header Banner -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-8 border-b border-grey-line/20">
+    <div>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo/10 text-indigo mb-3 border border-indigo/20">
+        <i data-lucide="briefcase" class="w-3.5 h-3.5"></i> Live Job Marketplace
+      </span>
+      <h1 class="font-display text-3xl md:text-4xl font-bold text-cream tracking-tight">
+        Discover Your Next Opportunity
+      </h1>
+      <p class="text-sm md:text-base text-cream/60 mt-2 max-w-xl">
+        Explore verified positions from top employers. Filter by skills, location, or work type.
+      </p>
+    </div>
+
+    <!-- For Employers CTA -->
+    <div class="flex items-center gap-3">
+      <a href="{{ url_for('main.post_job') }}" class="btn btn-accent inline-flex items-center gap-2">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i> Post a Job
+      </a>
+      <a href="{{ url_for('auth.employerplans') }}" class="btn btn-outline inline-flex items-center gap-2">
+        <i data-lucide="building-2" class="w-4 h-4"></i> Hiring Plans
+      </a>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="card p-5 mb-10 bg-navy-elevated/70 backdrop-blur-md border border-white/10 shadow-xl">
+    <div class="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_auto] gap-3">
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 text-cream/40 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        <input type="text" id="jobSearchInput" placeholder="Search by job title, company, or skills..." 
+               class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-navy-900 border border-white/10 text-cream text-sm focus:border-indigo outline-none transition-all placeholder:text-cream/40">
+      </div>
+      <div class="relative">
+        <i data-lucide="map-pin" class="w-4 h-4 text-cream/40 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+        <input type="text" id="locationSearchInput" placeholder="Location (e.g. Sydney, Remote)..." 
+               class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-navy-900 border border-white/10 text-cream text-sm focus:border-indigo outline-none transition-all placeholder:text-cream/40">
+      </div>
+      <div>
+        <select id="typeFilter" class="w-full px-4 py-2.5 rounded-xl bg-navy-900 border border-white/10 text-cream text-sm focus:border-indigo outline-none transition-all">
+          <option value="all">All Job Types</option>
+          <option value="Full Time">Full Time</option>
+          <option value="Part Time">Part Time</option>
+          <option value="Contract">Contract</option>
+          <option value="Internship">Internship</option>
+          <option value="Remote">Remote</option>
+        </select>
+      </div>
+      <button id="resetFiltersBtn" class="btn btn-outline text-xs px-4 py-2.5 border-white/10 hover:bg-white/5">
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Jobs Listing Section -->
+  <div class="grid lg:grid-cols-[1fr_340px] gap-8">
+
+    <!-- Job Cards -->
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-cream/50">
+          Showing <span id="jobsCount">{{ jobs|length }}</span> Available Jobs
+        </h2>
+        <span class="text-xs text-mint font-medium flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span> Verified listings
+        </span>
+      </div>
+
+      <div class="space-y-4" id="jobsContainer">
+        {% for job in jobs %}
+        <div class="job-item card p-6 hover:border-indigo/50 transition-all duration-200 group bg-navy-elevated/40 border border-white/5 relative"
+             data-title="{{ job.title|lower }}" 
+             data-location="{{ (job.location or '')|lower }}" 
+             data-type="{{ job.type or 'Full Time' }}">
+          
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <span class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-display font-bold text-lg shrink-0" 
+                    style="background: {{ job.company_color or 'linear-gradient(135deg, #6C5CF5, #2BE0BE)' }};">
+                {{ job.company_initials or (job.title[:1]|upper) }}
+              </span>
+              <div>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  <h3 class="font-display font-bold text-lg text-cream group-hover:text-indigo transition-colors">
+                    {{ job.title }}
+                  </h3>
+                  {% if job.is_employer_posted %}
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-mint/15 text-mint border border-mint/30">
+                    Live from Employer
+                  </span>
+                  {% endif %}
+                </div>
+                <p class="text-xs font-medium text-cream/70 mt-0.5">
+                  {{ job.company or 'Verified Nexora Employer' }}
+                </p>
+
+                <div class="flex items-center gap-4 text-xs text-cream/50 mt-2.5 flex-wrap">
+                  <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> {{ job.location or 'Flexible / Remote' }}</span>
+                  <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i> {{ job.type or 'Full Time' }}</span>
+                  {% if job.salary_min %}
+                  <span class="flex items-center gap-1 text-mint"><i data-lucide="dollar-sign" class="w-3.5 h-3.5"></i> ${{ job.salary_min }}{% if job.salary_max %} - ${{ job.salary_max }}{% endif %}/yr</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="flex sm:flex-col items-end justify-between gap-3 shrink-0">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-mint/15 text-mint border border-mint/20">
+                {{ job.match_score or '92' }}% Match
+              </span>
+              <button class="btn btn-primary btn-sm apply-btn" data-job-title="{{ job.title }}">
+                Quick Apply
+              </button>
+            </div>
+          </div>
+
+          {% if job.description %}
+          <p class="text-xs text-cream/70 mt-4 pt-3.5 border-t border-white/5 line-clamp-2">
+            {{ job.description }}
+          </p>
+          {% endif %}
+
+          {% if job.requirements %}
+          <div class="flex items-center gap-1.5 flex-wrap mt-3">
+            {% for req in job.requirements.split(',') %}
+            <span class="px-2.5 py-1 rounded-md bg-white/5 text-[11px] font-medium text-cream/80 border border-white/5">
+              {{ req.strip() }}
+            </span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Right Sidebar info -->
+    <div class="space-y-6">
+
+      <!-- Job Seeker Upgrade Box -->
+      <div class="card p-6 bg-gradient-to-br from-indigo-dark/80 to-navy-elevated border border-indigo/30 relative overflow-hidden">
+        <span class="w-10 h-10 rounded-xl bg-indigo/20 flex items-center justify-center text-indigo mb-4 border border-indigo/30">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </span>
+        <h3 class="font-display font-bold text-base text-cream mb-1.5">
+          Want Exact Match Scores?
+        </h3>
+        <p class="text-xs text-cream/70 mb-5 leading-relaxed">
+          Upgrade to Nexora Pro Seeker to see exact resume match %, AI skills feedback, and top recruiter visibility.
+        </p>
+        <a href="{{ url_for('auth.seekerplans') }}" class="btn btn-accent btn-sm w-full text-center">
+          View Seeker Plans →
+        </a>
+      </div>
+
+      <!-- Quick Resources -->
+      <div class="card p-6 bg-navy-elevated/40 border border-white/5">
+        <h3 class="font-display font-semibold text-sm text-cream mb-4">
+          Job Search Resources
+        </h3>
+        <ul class="space-y-3 text-xs text-cream/70">
+          <li class="flex items-center gap-2">
+            <i data-lucide="file-check" class="w-4 h-4 text-mint"></i>
+            <span>Resume keyword optimizer</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-mint"></i>
+            <span>Salary benchmark tracker</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="message-square" class="w-4 h-4 text-mint"></i>
+            <span>Direct employer messaging</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const searchInput = document.getElementById("jobSearchInput");
+  const locInput = document.getElementById("locationSearchInput");
+  const typeSelect = document.getElementById("typeFilter");
+  const resetBtn = document.getElementById("resetFiltersBtn");
+  const items = document.querySelectorAll(".job-item");
+  const countEl = document.getElementById("jobsCount");
+
+  function filterJobs() {
+    const query = (searchInput?.value || "").toLowerCase().trim();
+    const loc = (locInput?.value || "").toLowerCase().trim();
+    const type = typeSelect?.value || "all";
+    let visibleCount = 0;
+
+    items.forEach(item => {
+      const itemTitle = item.dataset.title || "";
+      const itemLoc = item.dataset.location || "";
+      const itemType = item.dataset.type || "";
+
+      const matchQuery = !query || itemTitle.includes(query);
+      const matchLoc = !loc || itemLoc.includes(loc);
+      const matchType = type === "all" || itemType.toLowerCase() === type.toLowerCase();
+
+      if (matchQuery && matchLoc && matchType) {
+        item.style.display = "block";
+        visibleCount++;
+      } else {
+        item.style.display = "none";
+      }
+    });
+
+    if (countEl) countEl.textContent = visibleCount;
+  }
+
+  searchInput?.addEventListener("input", filterJobs);
+  locInput?.addEventListener("input", filterJobs);
+  typeSelect?.addEventListener("change", filterJobs);
+
+  resetBtn?.addEventListener("click", () => {
+    if (searchInput) searchInput.value = "";
+    if (locInput) locInput.value = "";
+    if (typeSelect) typeSelect.value = "all";
+    filterJobs();
+  });
+
+  // Apply Button feedback
+  document.querySelectorAll(".apply-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+      const title = this.dataset.jobTitle || "the position";
+      this.textContent = "Applied ✓";
+      this.classList.remove("btn-primary");
+      this.classList.add("btn-outline");
+      this.style.color = "var(--mint)";
+      this.style.borderColor = "var(--mint)";
+      this.disabled = true;
+
+      if (window.showToast) {
+        window.showToast("Application submitted successfully for " + title + "!", "success");
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

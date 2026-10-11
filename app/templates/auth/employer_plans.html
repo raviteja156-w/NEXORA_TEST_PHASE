@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}Employer Plans — NEXORA{% endblock %}
+
+{% block head %}
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/plan_style.css') }}"
+>
+{% endblock %}
+
+{% block content %}
+
+<div class="plans-page">
+
+    <div class="plans-hero">
+        <span class="plans-badge">
+            <i data-lucide="briefcase" style="width:13px;height:13px;"></i>
+            FOR EMPLOYERS
+        </span>
+
+        <h1>Simple, transparent hiring plans</h1>
+
+        <p>
+            Post jobs and reach Australian talent — pick the plan
+            that fits how you hire. No lock-in contracts, no hidden fees.
+        </p>
+    </div>
+
+    <!-- Role Plan Switcher Tabs -->
+    <div style="display: flex; justify-content: center; margin: 10px 0 35px 0;">
+        <div style="background: rgba(255, 255, 255, 0.06); padding: 5px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.12); display: inline-flex; gap: 8px;">
+            <a href="{{ url_for('auth.seekerplans') }}?view=seeker" style="padding: 9px 22px; border-radius: 999px; font-size: 13.5px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; background: transparent; color: var(--ink-muted);">
+                <i data-lucide="user" style="width: 15px; height: 15px;"></i>
+                Job Seeker Plans
+            </a>
+            <a href="{{ url_for('auth.employerplans') }}?view=employer" style="padding: 9px 22px; border-radius: 999px; font-size: 13.5px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; background: var(--purple-600); color: white; box-shadow: 0 4px 14px rgba(108, 92, 245, 0.35);">
+                <i data-lucide="building-2" style="width: 15px; height: 15px;"></i>
+                Employer Hiring Plans
+            </a>
+        </div>
+    </div>
+
+    <div class="plans-grid">
+
+        <!-- BASIC -->
+        <div class="plan-card">
+            <p class="plan-name">Basic</p>
+            <p class="plan-tagline">Try NEXORA with your first listing</p>
+
+            <div class="plan-price">
+                <span class="amount">$0</span>
+            </div>
+            <p class="plan-duration">Free for 21 days</p>
+
+            <ul class="plan-features">
+                <li><i data-lucide="check"></i> 1 active job listing</li>
+                <li><i data-lucide="check"></i> Standard search placement</li>
+                <li><i data-lucide="check"></i> Basic company profile</li>
+                <li><i data-lucide="check"></i> Email applicant notifications</li>
+                <li><i data-lucide="check"></i> 21-day listing duration</li>
+            </ul>
+
+            <a href="{{ url_for('main.post_job') }}" class="plan-cta outline employer-plan-btn" data-plan="Basic">
+                Get Started Free
+            </a>
+        </div>
+
+        <!-- FEATURED -->
+        <div class="plan-card featured">
+            <span class="plan-ribbon">MOST POPULAR</span>
+
+            <p class="plan-name">Featured</p>
+            <p class="plan-tagline">Get noticed by more candidates</p>
+
+            <div class="plan-price">
+                <span class="amount">$29</span>
+                <span class="period">/ listing</span>
+            </div>
+            <p class="plan-duration">Runs for 7 days</p>
+
+            <ul class="plan-features">
+                <li><i data-lucide="check"></i> Everything in Basic</li>
+                <li><i data-lucide="check"></i> "Featured" badge on your listing</li>
+                <li><i data-lucide="check"></i> Higher placement in search results</li>
+                <li><i data-lucide="check"></i> Boosted visibility in category pages</li>
+                <li><i data-lucide="check"></i> 7-day active listing</li>
+            </ul>
+
+            <a href="{{ url_for('main.post_job') }}" class="plan-cta primary employer-plan-btn" data-plan="Featured">
+                Choose Featured
+            </a>
+        </div>
+
+        <!-- PREMIUM -->
+        <div class="plan-card">
+            <p class="plan-name">Premium</p>
+            <p class="plan-tagline">Maximum visibility, fastest results</p>
+
+            <div class="plan-price">
+                <span class="amount">$59</span>
+                <span class="period">/ listing</span>
+            </div>
+            <p class="plan-duration">Runs for 7 days</p>
+
+            <ul class="plan-features">
+                <li><i data-lucide="check"></i> Everything in Featured</li>
+                <li><i data-lucide="check"></i> Top-of-page placement</li>
+                <li><i data-lucide="check"></i> Homepage spotlight slot</li>
+                <li><i data-lucide="check"></i> Highlighted card styling</li>
+                <li><i data-lucide="check"></i> Priority support</li>
+            </ul>
+
+            <button type="button" class="plan-cta outline employer-plan-btn" data-plan="Premium Package">
+                Choose Premium
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Preview Notice Modal for Employer Plans -->
+    <div id="empPlanPreviewModal" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(10, 16, 30, 0.75); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 20px; max-width: 440px; width: 100%; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); text-align: center; border: 1px solid rgba(0,0,0,0.06); position: relative; animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(108, 92, 245, 0.1); color: #6C5CF5; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                <i data-lucide="sparkles" style="width: 28px; height: 28px;"></i>
+            </div>
+            
+            <div style="display: inline-block; padding: 4px 12px; border-radius: 999px; background: #FEF3C7; color: #92400E; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; border: 1px solid #FDE68A;">
+                Feature Coming Soon
+            </div>
+
+            <h3 style="font-size: 20px; font-weight: 700; color: #0A101E; margin-bottom: 8px;" id="empModalPlanTitle">Package Preview</h3>
+            
+            <p style="font-size: 13.5px; line-height: 1.5; color: #5B616E; margin-bottom: 20px;" id="empModalPlanDesc">
+                Online payment and paid listing package upgrades are currently under development. Thanks for your interest!
+            </p>
+
+            <div style="padding: 10px 14px; background: #F8F9FA; border-radius: 10px; font-size: 12.5px; color: #4B5563; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i data-lucide="clock" style="width: 15px; height: 15px; color: #6C5CF5;"></i>
+                <span id="empCountdownText">Returning to dashboard in 3s...</span>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" id="btnEmpStay" style="flex: 1; padding: 10px 16px; border-radius: 12px; border: 1px solid #E5E7EB; background: white; color: #4B5563; font-weight: 600; font-size: 13.5px; cursor: pointer;">
+                    Keep Exploring
+                </button>
+                <a href="{{ url_for('auth.employerdashboard') }}" id="btnEmpGoDashboard" style="flex: 1; padding: 10px 16px; border-radius: 12px; background: #6C5CF5; color: white; font-weight: 600; font-size: 13.5px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    Dashboard →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+
+    <p class="plans-footnote">
+        Looking for career and match tools as a job seeker? 
+        <a href="{{ url_for('auth.seekerplans') }}" style="color: #6C5CF5; text-decoration: underline; font-weight: 600;">
+            View Job Seeker Pro Plans →
+        </a>
+    </p>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Auto-redirect job seekers to Seeker Plans unless explicitly browsing employer plans
+        if (window.supabaseClient) {
+            window.supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                if (session && session.user) {
+                    const meta = session.user.user_metadata || {};
+                    const role = meta.role;
+                    const hasEmployerId = !!meta.employer_id;
+                    const activePortal = localStorage.getItem("nx_current_role");
+                    const isEmployer = (activePortal === "employer") || 
+                                       (role === "employer") || 
+                                       (role === "both" && activePortal !== "job_seeker") ||
+                                       (hasEmployerId && activePortal !== "job_seeker");
+
+                    if (!isEmployer && !window.location.search.includes("view=employer")) {
+                        window.location.replace("{{ url_for('auth.seekerplans') }}");
+                        return;
+                    }
+                }
+            });
+        }
+
+        const modal = document.getElementById("empPlanPreviewModal");
+        const modalTitle = document.getElementById("empModalPlanTitle");
+        const modalDesc = document.getElementById("empModalPlanDesc");
+        const countdownText = document.getElementById("empCountdownText");
+        const btnStay = document.getElementById("btnEmpStay");
+        let redirectTimer = null;
+        let countdownInterval = null;
+
+        function showEmpPlanNotice(planName) {
+            if (modal) {
+                modalTitle.textContent = planName + " (Preview)";
+                modalDesc.textContent = "Online payment and listing package billing for " + planName + " are currently under development and will be available in the next release. We have logged your interest!";
+                modal.style.display = "flex";
+                if (window.lucide) window.lucide.createIcons({ root: modal });
+
+                let secondsLeft = 3;
+                countdownText.textContent = "Returning to dashboard in " + secondsLeft + "s...";
+
+                clearInterval(countdownInterval);
+                clearTimeout(redirectTimer);
+
+                countdownInterval = setInterval(() => {
+                    secondsLeft -= 1;
+                    if (secondsLeft > 0) {
+                        countdownText.textContent = "Returning to dashboard in " + secondsLeft + "s...";
+                    } else {
+                        clearInterval(countdownInterval);
+                    }
+                }, 1000);
+
+                redirectTimer = setTimeout(() => {
+                    window.location.href = "{{ url_for('auth.employerdashboard') }}";
+                }, 3000);
+            }
+
+            if (window.showToast) {
+                window.showToast(planName + " billing is under development. Redirecting to dashboard...", "info");
+            }
+        }
+
+        btnStay?.addEventListener("click", function() {
+            clearInterval(countdownInterval);
+            clearTimeout(redirectTimer);
+            if (modal) modal.style.display = "none";
+        });
+
+        document.querySelectorAll(".employer-plan-btn").forEach(btn => {
+            btn.addEventListener("click", function(e) {
+                e.preventDefault();
+                const plan = this.getAttribute("data-plan") || "Hiring Package";
+                showEmpPlanNotice(plan);
+            });
+        });
+    });
+</script>
+
+{% endblock %}

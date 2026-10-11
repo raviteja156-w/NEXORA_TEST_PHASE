@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Post a Job — NEXORA{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-5 py-12">
+    
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-navy mb-2">Post a New Job</h1>
+        <p class="text-ink/60">Fill out the details below to publish a new open position for your company.</p>
+    </div>
+
+    <form class="card p-8 space-y-6">
+        
+        <!-- Job Title -->
+        <div>
+            <label class="block text-sm font-semibold text-navy mb-2" for="job_title">Job Title</label>
+            <input type="text" id="job_title" class="w-full px-4 py-3 rounded-xl border border-ink/10 focus:border-indigo focus:ring-2 focus:ring-indigo/20 outline-none transition-all" placeholder="e.g. Senior Frontend Developer" required>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Job Type -->
+            <div>
+                <label class="block text-sm font-semibold text-navy mb-2" for="job_type">Job Type</label>
+                <select id="job_type" class="w-full px-4 py-3 rounded-xl border border-ink/10 focus:border-indigo outline-none transition-all" required>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Freelance">Freelance</option>
+                    <option value="Internship">Internship</option>
+                </select>
+            </div>
+
+            <!-- Location -->
+            <div>
+                <label class="block text-sm font-semibold text-navy mb-2" for="location">Location / Workspace</label>
+                <input type="text" id="location" class="w-full px-4 py-3 rounded-xl border border-ink/10 focus:border-indigo focus:ring-2 focus:ring-indigo/20 outline-none transition-all" placeholder="e.g. Sydney, NSW or Remote" required>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Salary Min -->
+            <div>
+                <label class="block text-sm font-semibold text-navy mb-2" for="salary_min">Minimum Salary (AUD)</label>
+                <input type="number" id="salary_min" class="w-full px-4 py-3 rounded-xl border border-ink/10 focus:border-indigo focus:ring-2 focus:ring-indigo/20 outline-none transition-all" placeholder="e.g. 80000">
+            </div>
+
+            <!-- Salary Max -->
+            <div>
+                <label class="block text-sm font-semibold text-navy mb-2" for="salary_max">Maximum Salary (AUD)</label>
+                <input type="number" id="salary_max" class="w-full px-4 py-3 rounded-xl border border-ink/10 focus:border-indigo focus:ring-2 focus:ring-indigo/20 outline-none transition-all" placeholder="e.g. 120000">
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label class="block text-sm font-semibold text-navy mb-2" for="description">Job Description</label>
+            <textarea id="description" rows="6" class="w-full px-4 py-3 rounded-xl border border-ink/10 focus:border-indigo focus:ring-2 focus:ring-indigo/20 outline-none transition-all resize-y" placeholder="Describe the role, responsibilities, and requirements..." required></textarea>
+        </div>
+
+        <!-- Requirements -->
+        <div>
+            <label class="block text-sm font-semibold text-navy mb-2" for="requirements">Key Requirements (comma separated)</label>
+            <input type="text" id="requirements" class="w-full px-4 py-3 rounded-xl border border-ink/10 focus:border-indigo focus:ring-2 focus:ring-indigo/20 outline-none transition-all" placeholder="e.g. React, Node.js, 3+ years experience" required>
+        </div>
+
+        <hr class="border-ink/10 my-8">
+
+        <div class="flex justify-end gap-4">
+            <a href="{{ url_for('auth.employerdashboard') }}" class="px-6 py-3 rounded-xl font-semibold text-navy hover:bg-ink/5 transition-colors">Cancel</a>
+            <button type="submit" id="submitBtn" class="btn btn-accent">Publish Job</button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        // Wait for Supabase client from base.html to load
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Get the current user session
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.showToast("You must be logged in to post a job.", "error");
+                return;
+            }
+
+            const employerId = session.user.user_metadata?.employer_id;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Publishing...";
+
+            const jobData = {
+                title: document.getElementById('job_title').value.trim(),
+                type: document.getElementById('job_type').value,
+                location: document.getElementById('location').value.trim(),
+                salary_min: document.getElementById('salary_min').value || null,
+                salary_max: document.getElementById('salary_max').value || null,
+                description: document.getElementById('description').value.trim(),
+                requirements: document.getElementById('requirements').value.trim(),
+                employer_id: employerId
+            };
+
+            try {
+                const res = await fetch("{{ url_for('main.post_job') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(jobData)
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    window.showToast("Job published successfully!", "success");
+                    setTimeout(() => {
+                        window.location.href = "{{ url_for('auth.employerdashboard') }}";
+                    }, 2000);
+                } else {
+                    window.showToast(data.error || "Failed to publish job.", "error");
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Publish Job";
+                }
+            } catch (err) {
+                console.error("Error posting job:", err);
+                window.showToast("An unexpected error occurred.", "error");
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Publish Job";
+            }
+        });
+    });
+</script>
+{% endblock %}
